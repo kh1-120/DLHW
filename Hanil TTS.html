@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fc">
+  <title>Say It — English Pronunciation Studio</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #697386;
+      --line: #e5e9f0;
+      --paper: #fff;
+      --bg: #f7f8fc;
+      --blue: #405de6;
+      --blue-dark: #3049c3;
+      --blue-pale: #eef1ff;
+      --green: #23866a;
+      --shadow: 0 16px 48px rgba(28, 42, 75, .07);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 18% 0%, rgba(220, 226, 255, .56), transparent 38rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1040px, calc(100% - 40px)); margin: 0 auto; padding: 32px 0 48px; }
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 62px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 750; letter-spacing: -.04em; font-size: 19px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; color: white; background: var(--blue); box-shadow: 0 5px 14px #405de644; }
+    .brand-mark svg { width: 18px; }
+    .header-actions { display: flex; align-items: center; gap: 14px; }
+    .header-note { color: var(--muted); font-size: 13px; }
+    .download-button { display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; color: #34405a; background: #fff; font-size: 12px; font-weight: 700; transition: border-color .15s, background .15s; }
+    .download-button:hover { border-color: #bdc7f7; background: #f8f9ff; }
+    .download-button svg { width: 15px; height: 15px; color: var(--blue); }
+    .hero { max-width: 690px; margin: 0 auto 34px; text-align: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 7px; color: var(--blue); font-size: 12px; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 99px; background: currentColor; }
+    h1 { margin: 12px 0 10px; font-size: clamp(36px, 6vw, 56px); line-height: 1.06; letter-spacing: -.06em; }
+    .hero p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    .studio { background: var(--paper); border: 1px solid #e9ecf3; border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; }
+    .input-area { padding: 25px 27px 19px; }
+    .input-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    label { font-size: 13px; font-weight: 700; }
+    .input-hint, .counter { color: #8a93a3; font-size: 12px; }
+    textarea { display: block; width: 100%; min-height: 144px; padding: 17px 18px; resize: vertical; border: 1px solid var(--line); border-radius: 14px; outline: none; color: var(--ink); background: #fcfcfe; font-size: 17px; line-height: 1.65; transition: border-color .16s, box-shadow .16s; }
+    textarea:focus { border-color: #8999f2; box-shadow: 0 0 0 4px #405de612; }
+    textarea::placeholder { color: #aab1bf; }
+    .input-foot { display: flex; justify-content: space-between; margin-top: 10px; }
+    .text-actions { display: flex; gap: 15px; }
+    .text-action { border: 0; padding: 0; background: transparent; color: #717b8e; font-size: 12px; }
+    .text-action:hover { color: var(--blue); }
+    .settings { display: flex; align-items: center; gap: 14px; padding: 14px 27px; border-top: 1px solid #eff1f5; border-bottom: 1px solid #eff1f5; background: #fcfcfe; }
+    .setting-label { color: #697386; font-size: 12px; font-weight: 650; white-space: nowrap; }
+    .range-wrap { display: flex; align-items: center; gap: 10px; width: min(310px, 50%); }
+    input[type="range"] { width: 100%; accent-color: var(--blue); }
+    .range-value { min-width: 34px; color: var(--ink); font-variant-numeric: tabular-nums; font-size: 12px; }
+    .settings-divider { width: 1px; height: 22px; background: var(--line); margin: 0 5px; }
+    .results { padding: 23px 27px 27px; }
+    .results-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 15px; }
+    .results-head h2 { margin: 0; font-size: 15px; letter-spacing: -.02em; }
+    .results-head p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .stop-button { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 9px; color: #586276; background: white; font-size: 12px; font-weight: 650; }
+    .stop-button:hover:not(:disabled) { border-color: #c5cbd6; background: #fafbfc; }
+    .stop-button:disabled { cursor: default; opacity: .45; }
+    .voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .voice-card { min-width: 0; padding: 17px; border: 1px solid var(--line); border-radius: 15px; transition: border-color .2s, background .2s, box-shadow .2s; }
+    .voice-card.is-playing { border-color: #aab5ff; background: #fbfbff; box-shadow: 0 0 0 3px #405de60c; }
+    .voice-top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+    .accent { display: flex; align-items: center; gap: 9px; }
+    .flag { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: #f1f3f9; font-size: 18px; }
+    .accent-name { font-size: 14px; font-weight: 750; }
+    .accent-locale { margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .voice-select { max-width: 48%; padding: 6px 24px 6px 8px; border: 1px solid var(--line); border-radius: 8px; color: #626d80; background: white; font-size: 11px; outline: none; }
+    .voice-select:focus { border-color: #8999f2; }
+    .preview { display: flex; min-height: 51px; align-items: center; margin: 14px 0 12px; padding: 10px 12px; border-radius: 10px; color: #657086; background: #f7f8fb; font-size: 12px; line-height: 1.55; }
+    .play-button { display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px; padding: 10px 12px; border: 0; border-radius: 10px; color: white; background: var(--blue); font-size: 13px; font-weight: 700; transition: background .15s, transform .15s; }
+    .play-button:hover:not(:disabled) { background: var(--blue-dark); transform: translateY(-1px); }
+    .play-button:disabled { cursor: not-allowed; opacity: .5; }
+    .play-button svg, .stop-button svg { width: 15px; height: 15px; flex: 0 0 auto; }
+    .status { min-height: 18px; margin: 12px 0 0; color: var(--muted); text-align: center; font-size: 12px; }
+    .status.error { color: #b43b4a; }
+    footer { display: flex; justify-content: center; gap: 6px; margin-top: 20px; color: #8992a1; font-size: 11px; }
+    footer span { color: var(--green); font-weight: 700; }
+    @media (max-width: 660px) {
+      .shell { width: min(100% - 24px, 500px); padding-top: 19px; }
+      header { margin-bottom: 43px; }
+      .header-note { display: none; }
+      .hero { margin-bottom: 25px; }
+      .hero p { font-size: 14px; }
+      .input-area { padding: 19px 17px 15px; }
+      textarea { min-height: 132px; font-size: 16px; }
+      .settings { padding: 13px 17px; gap: 9px; flex-wrap: wrap; }
+      .setting-label { font-size: 11px; }
+      .range-wrap { width: 40%; }
+      .settings-divider { margin: 0 2px; }
+      .results { padding: 19px 17px 20px; }
+      .voice-grid { grid-template-columns: 1fr; }
+      .voice-select { max-width: 58%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M8 7v10M4 10v4m12-7v10m4-7v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>say it<span style="color:#8d98aa;font-weight:500">.</span></div>
+      <div class="header-actions"><div class="header-note">A little practice goes a long way.</div><button class="download-button" id="downloadButton" type="button" title="이 앱의 HTML 파일 다운로드"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.75v9m0 0 3.5-3.5M10 11.75 6.5 8.25M3.5 13.25v2A1.75 1.75 0 0 0 5.25 17h9.5a1.75 1.75 0 0 0 1.75-1.75v-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>HTML 다운로드</button></div>
+    </header>
+    <section class="hero" aria-labelledby="title">
+      <div class="eyebrow">English pronunciation studio</div>
+      <h1 id="title">Hear it both ways.</h1>
+      <p>영어 문장을 입력하고 미국식과 영국식 발음을 비교해 보세요.</p>
+    </section>
+
+    <section class="studio" aria-label="영어 음성 변환기">
+      <div class="input-area">
+        <div class="input-head"><label for="textInput">Your English text</label><span class="input-hint">영어 문장을 입력하세요</span></div>
+        <textarea id="textInput" maxlength="2000" placeholder="Type or paste an English sentence here…" spellcheck="false" aria-describedby="charCount"></textarea>
+        <div class="input-foot">
+          <div class="text-actions"><button class="text-action" id="sampleButton" type="button">예문 넣기</button><button class="text-action" id="clearButton" type="button">지우기</button></div>
+          <span class="counter" id="charCount">0 / 2,000</span>
+        </div>
+      </div>
+      <div class="settings" aria-label="음성 설정">
+        <span class="setting-label">말하기 속도</span>
+        <div class="range-wrap"><input id="rateInput" type="range" min="0.65" max="1.25" step="0.05" value="1" aria-label="말하기 속도"><output class="range-value" id="rateValue">1.00×</output></div>
+        <span class="settings-divider" aria-hidden="true"></span>
+        <span class="setting-label">재생 음성은 브라우저 설정에 따라 달라질 수 있어요</span>
+      </div>
+      <div class="results">
+        <div class="results-head"><div><h2>Choose an accent</h2><p>듣고 싶은 발음을 선택하세요</p></div><button class="stop-button" id="stopButton" type="button" disabled><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><rect x="4" y="4" width="12" height="12" rx="2"/></svg>모두 정지</button></div>
+        <div class="voice-grid">
+          <article class="voice-card" data-accent="us">
+            <div class="voice-top"><div class="accent"><span class="flag" aria-hidden="true">🇺🇸</span><div><div class="accent-name">미국식 영어</div><div class="accent-locale">American · en-US</div></div></div><select class="voice-select" id="usVoice" aria-label="미국식 음성 선택"></select></div>
+            <div class="preview" id="usPreview">미국식 영어 발음을 들려드릴게요.</div>
+            <button class="play-button" type="button" data-play="us"><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6 3.8a1 1 0 0 1 1.52-.85l9.2 5.7a1.6 1.6 0 0 1 0 2.7l-9.2 5.7A1 1 0 0 1 6 16.2V3.8Z"/></svg><span>미국식으로 듣기</span></button>
+          </article>
+          <article class="voice-card" data-accent="uk">
+            <div class="voice-top"><div class="accent"><span class="flag" aria-hidden="true">🇬🇧</span><div><div class="accent-name">영국식 영어</div><div class="accent-locale">British · en-GB</div></div></div><select class="voice-select" id="ukVoice" aria-label="영국식 음성 선택"></select></div>
+            <div class="preview" id="ukPreview">영국식 영어 발음을 들려드릴게요.</div>
+            <button class="play-button" type="button" data-play="uk"><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M6 3.8a1 1 0 0 1 1.52-.85l9.2 5.7a1.6 1.6 0 0 1 0 2.7l-9.2 5.7A1 1 0 0 1 6 16.2V3.8Z"/></svg><span>영국식으로 듣기</span></button>
+          </article>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+    <footer><span>●</span> 브라우저에서 바로 재생 · 텍스트는 서버로 전송되지 않습니다</footer>
+  </main>
+  <script>
+    (() => {
+      const synth = window.speechSynthesis;
+      const textInput = document.querySelector('#textInput');
+      const rateInput = document.querySelector('#rateInput');
+      const rateValue = document.querySelector('#rateValue');
+      const count = document.querySelector('#charCount');
+      const status = document.querySelector('#status');
+      const stopButton = document.querySelector('#stopButton');
+      const buttons = [...document.querySelectorAll('[data-play]')];
+      const cards = [...document.querySelectorAll('.voice-card')];
+      const voiceSelects = { us: document.querySelector('#usVoice'), uk: document.querySelector('#ukVoice') };
+      const accentNames = { us: '미국식', uk: '영국식' };
+      let voiceMap = { us: [], uk: [] };
+      let activeAccent = null;
+
+      function setStatus(message = '', isError = false) {
+        status.textContent = message;
+        status.classList.toggle('error', isError);
+      }
+
+      function getLocale(voice) { return (voice.lang || '').toLowerCase().replace('_', '-'); }
+
+      function populateVoices() {
+        if (!synth) return;
+        const all = synth.getVoices();
+        for (const accent of ['us', 'uk']) {
+          const locale = accent === 'us' ? 'en-us' : 'en-gb';
+          const matches = all.filter(voice => getLocale(voice) === locale);
+          const englishFallbacks = all.filter(voice => getLocale(voice).startsWith('en-') && !matches.includes(voice));
+          voiceMap[accent] = matches.length ? matches : englishFallbacks;
+          const select = voiceSelects[accent];
+          const previous = select.value;
+          select.replaceChildren();
+          const options = voiceMap[accent];
+          if (!options.length) {
+            const option = new Option('기본 음성', '');
+            select.add(option);
+            select.disabled = true;
+            continue;
+          }
+          select.disabled = false;
+          options.forEach((voice, index) => {
+            const option = new Option(`${voice.name} · ${voice.lang}`, String(index));
+            select.add(option);
+          });
+          const previousIndex = options.findIndex(voice => `${voice.name}|${voice.lang}` === previous);
+          const exactIndex = options.findIndex(voice => getLocale(voice) === locale);
+          const preferredIndex = options.findIndex(voice => voice.default);
+          select.value = String(previousIndex >= 0 ? previousIndex : exactIndex >= 0 ? exactIndex : preferredIndex >= 0 ? preferredIndex : 0);
+          [...select.options].forEach((option, i) => { option.value = `${options[i].name}|${options[i].lang}`; });
+        }
+        const hasEnglish = all.some(voice => getLocale(voice).startsWith('en-'));
+        if (!all.length) setStatus('음성 목록을 불러오는 중입니다…');
+        else if (!hasEnglish) setStatus('영어 음성이 보이지 않아 브라우저 기본 음성으로 재생할 수 있습니다.');
+        else setStatus('');
+      }
+
+      function selectedVoice(accent) {
+        const select = voiceSelects[accent];
+        return voiceMap[accent].find(voice => `${voice.name}|${voice.lang}` === select.value) || voiceMap[accent][0] || null;
+      }
+
+      function updateText() {
+        count.textContent = `${textInput.value.length.toLocaleString()} / 2,000`;
+        const value = textInput.value.trim();
+        document.querySelector('#usPreview').textContent = value || '미국식 영어 발음을 들려드릴게요.';
+        document.querySelector('#ukPreview').textContent = value || '영국식 영어 발음을 들려드릴게요.';
+      }
+
+      function setPlaying(accent) {
+        activeAccent = accent;
+        stopButton.disabled = !accent;
+        cards.forEach(card => card.classList.toggle('is-playing', card.dataset.accent === accent));
+        buttons.forEach(button => {
+          const playing = button.dataset.play === accent;
+          button.querySelector('span').textContent = playing ? `${accentNames[accent]} 재생 중…` : `${accentNames[button.dataset.play]}으로 듣기`;
+        });
+      }
+
+      function stop() {
+        if (synth) synth.cancel();
+        setPlaying(null);
+        setStatus('재생을 정지했어요.');
+      }
+
+      function speak(accent) {
+        const text = textInput.value.trim();
+        if (!text) {
+          textInput.focus();
+          setStatus('먼저 영어 문장을 입력해 주세요.', true);
+          return;
+        }
+        if (!synth || !('SpeechSynthesisUtterance' in window)) {
+          setStatus('이 브라우저는 음성 합성을 지원하지 않습니다. 최신 Chrome, Edge, Safari 또는 Firefox를 이용해 주세요.', true);
+          return;
+        }
+        synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voice = selectedVoice(accent);
+        if (voice) {
+          utterance.voice = voice;
+          utterance.lang = voice.lang;
+        } else {
+          utterance.lang = accent === 'us' ? 'en-US' : 'en-GB';
+        }
+        utterance.rate = Number(rateInput.value);
+        utterance.onstart = () => { setPlaying(accent); setStatus(`${accentNames[accent]} 발음으로 재생 중입니다.`); };
+        utterance.onend = () => { if (activeAccent === accent) { setPlaying(null); setStatus('재생이 끝났어요.'); } };
+        utterance.onerror = event => {
+          if (event.error !== 'canceled' && event.error !== 'interrupted') {
+            setPlaying(null);
+            setStatus('음성을 재생하지 못했어요. 브라우저의 음성 설정을 확인해 주세요.', true);
+          }
+        };
+        setPlaying(accent);
+        setStatus(`${accentNames[accent]} 발음을 준비하고 있습니다…`);
+        synth.speak(utterance);
+      }
+
+      textInput.addEventListener('input', updateText, { passive: true });
+      rateInput.addEventListener('input', () => { rateValue.value = `${Number(rateInput.value).toFixed(2)}×`; }, { passive: true });
+      document.querySelector('#sampleButton').addEventListener('click', () => {
+        textInput.value = 'The quick brown fox jumps over the lazy dog. I would love a cup of tea, please.';
+        updateText();
+        textInput.focus();
+      });
+      document.querySelector('#clearButton').addEventListener('click', () => { textInput.value = ''; updateText(); textInput.focus(); setStatus(''); });
+      document.querySelector('#downloadButton').addEventListener('click', () => {
+        const source = '<!doctype html>\n' + document.documentElement.outerHTML;
+        const file = new Blob([source], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(file);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'say-it-english-pronunciation.html';
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+      buttons.forEach(button => button.addEventListener('click', () => speak(button.dataset.play)));
+      stopButton.addEventListener('click', stop);
+      if (synth) {
+        populateVoices();
+        if (typeof synth.addEventListener === 'function') synth.addEventListener('voiceschanged', populateVoices);
+        else synth.onvoiceschanged = populateVoices;
+      } else {
+        buttons.forEach(button => { button.disabled = true; });
+        setStatus('이 브라우저는 음성 합성을 지원하지 않습니다.', true);
+      }
+      updateText();
+    })();
+  </script>
+</body>
+</html>
